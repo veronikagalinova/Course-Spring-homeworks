@@ -1,6 +1,6 @@
 package bg.sofia.uni.fmi.Blogger.Rest.API.web;
 
-import bg.sofia.uni.fmi.Blogger.Rest.API.domain.posts.PostsService;
+import bg.sofia.uni.fmi.Blogger.Rest.API.domain.PostsService;
 import bg.sofia.uni.fmi.Blogger.Rest.API.model.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

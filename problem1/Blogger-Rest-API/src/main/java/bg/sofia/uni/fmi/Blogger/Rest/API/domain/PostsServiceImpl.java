@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.Blogger.Rest.API.domain.posts;
+package bg.sofia.uni.fmi.Blogger.Rest.API.domain;
 
 import bg.sofia.uni.fmi.Blogger.Rest.API.dao.PostsRepository;
 import bg.sofia.uni.fmi.Blogger.Rest.API.exception.NonexisitngEntityException;

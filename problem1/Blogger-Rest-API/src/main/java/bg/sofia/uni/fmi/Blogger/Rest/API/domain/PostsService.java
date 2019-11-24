@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.Blogger.Rest.API.domain.posts;
+package bg.sofia.uni.fmi.Blogger.Rest.API.domain;
 
 import bg.sofia.uni.fmi.Blogger.Rest.API.model.Post;
 
