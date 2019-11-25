@@ -41,31 +41,36 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/v2/api-docs").permitAll()
                 .antMatchers("/swagger*/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/**").authenticated()
-                .antMatchers(HttpMethod.POST, "/**").hasAnyRole("USER", "ADMIN")
-                .antMatchers(HttpMethod.PUT).hasAnyRole("USER", "ADMIN")
-                .antMatchers(HttpMethod.DELETE).hasAnyRole("USER", "ADMIN")
+                .antMatchers(HttpMethod.POST, "api/**").hasAnyRole("BLOGGER", "ADMINISTRATOR")
+                .antMatchers(HttpMethod.PUT).hasAnyRole("BLOGGER", "ADMINISTRATOR")
+                .antMatchers(HttpMethod.DELETE).hasAnyRole("BLOGGER", "ADMINISTRATOR")
                 .and()
                 .formLogin()
+                .loginProcessingUrl("/api/login")
                 .permitAll()
                 .successHandler(authenticationSuccessHandler)
                 .failureHandler(new SimpleUrlAuthenticationFailureHandler())
                 .and()
-                .logout();
+                .logout()
+                .logoutUrl("/api/logout")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .logoutSuccessUrl("/actuator/health");
     }
 
 
-//    @Bean
-//    public UserDetailsService userDetailsService() {
-//        List<UserDetails> users = new ArrayList<>();
-//        users.add(User.withDefaultPasswordEncoder()
-//                .username("user").password("user")
-//                .roles("BLOGGER").build());
-//
-//        users.add(User.withDefaultPasswordEncoder()
-//                .username("admin").password("admin")
-//                .roles("ADMINISTRATOR").build());
-//
-//        return new InMemoryUserDetailsManager(users);
-//    }
+    @Bean
+    public UserDetailsService userDetailsService() {
+        List<UserDetails> users = new ArrayList<>();
+        users.add(User.withDefaultPasswordEncoder()
+                .username("user").password("user")
+                .roles("BLOGGER").build());
+
+        users.add(User.withDefaultPasswordEncoder()
+                .username("admin").password("admin")
+                .roles("ADMINISTRATOR").build());
+
+        return new InMemoryUserDetailsManager(users);
+    }
 
 }
