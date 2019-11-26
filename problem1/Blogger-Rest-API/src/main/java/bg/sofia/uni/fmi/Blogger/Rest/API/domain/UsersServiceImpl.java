@@ -30,7 +30,7 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public User createUser(@Valid User user) {
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
-            user.setRoles(Arrays.asList(Role.ROLE_BLOGGER));
+            user.setRoles(Arrays.asList(Role.BLOGGER));
         }
         user.setActive(true);
         User created = repository.save(user);
