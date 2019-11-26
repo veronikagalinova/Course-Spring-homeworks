@@ -5,6 +5,7 @@ import bg.sofia.uni.fmi.Blogger.Rest.API.exception.InvalidEntityException;
 import bg.sofia.uni.fmi.Blogger.Rest.API.exception.NonexisitngEntityException;
 import bg.sofia.uni.fmi.Blogger.Rest.API.model.Role;
 import bg.sofia.uni.fmi.Blogger.Rest.API.model.User;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,8 +28,12 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public User createUser(User user) {
-        User created = repository.insert(user);
+    public User createUser(@Valid User user) {
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
+            user.setRoles(Arrays.asList(Role.ROLE_BLOGGER));
+        }
+        user.setActive(true);
+        User created = repository.save(user);
         log.debug(">>>Created new user: " + created);
         return created;
     }

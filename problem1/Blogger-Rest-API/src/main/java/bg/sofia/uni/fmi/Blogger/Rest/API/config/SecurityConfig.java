@@ -54,6 +54,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "api/**").hasAnyRole("BLOGGER", "ADMINISTRATOR")
                 .antMatchers(HttpMethod.PUT).hasAnyRole("BLOGGER", "ADMINISTRATOR")
                 .antMatchers(HttpMethod.DELETE).hasAnyRole("BLOGGER", "ADMINISTRATOR")
+                .antMatchers(HttpMethod.GET, "/api/users").hasAnyRole("ADMINISTRATOR")
+                .antMatchers(HttpMethod.POST, "/api/users").hasAnyRole("ADMINISTRATOR")
                 .and()
                 .formLogin()
                 .usernameParameter("email")
