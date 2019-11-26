@@ -1,23 +1,20 @@
 package bg.sofia.uni.fmi.Blogger.Rest.API.config;
 
+import bg.sofia.uni.fmi.Blogger.Rest.API.security.BlogUserDetailsService;
 import bg.sofia.uni.fmi.Blogger.Rest.API.security.RestAuthenticationEntryPoint;
 import bg.sofia.uni.fmi.Blogger.Rest.API.security.RestSavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
-import java.util.ArrayList;
-import java.util.List;
+
 
 @Configuration
 @EnableWebSecurity
@@ -27,6 +24,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private RestSavedRequestAwareAuthenticationSuccessHandler authenticationSuccessHandler;
+
+    @Autowired
+    private BlogUserDetailsService userDetailsService;
+
+    @Bean
+    public static NoOpPasswordEncoder passwordEncoder() {
+        return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
+    }
+
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder authenticationMgr) throws Exception {
+        authenticationMgr.userDetailsService(userDetailsService).passwordEncoder(NoOpPasswordEncoder.getInstance());
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -46,6 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE).hasAnyRole("BLOGGER", "ADMINISTRATOR")
                 .and()
                 .formLogin()
+                .usernameParameter("email")
                 .loginProcessingUrl("/api/login")
                 .permitAll()
                 .successHandler(authenticationSuccessHandler)
@@ -56,21 +67,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .logoutSuccessUrl("/actuator/health");
-    }
-
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        List<UserDetails> users = new ArrayList<>();
-        users.add(User.withDefaultPasswordEncoder()
-                .username("user").password("user")
-                .roles("BLOGGER").build());
-
-        users.add(User.withDefaultPasswordEncoder()
-                .username("admin").password("admin")
-                .roles("ADMINISTRATOR").build());
-
-        return new InMemoryUserDetailsManager(users);
     }
 
 }
