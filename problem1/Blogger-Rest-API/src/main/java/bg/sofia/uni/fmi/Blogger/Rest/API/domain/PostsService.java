@@ -10,4 +10,5 @@ public interface PostsService {
     Post add(Post post);
     Post update(Post post);
     Post remove(String postId);
+    long getSize();
 }

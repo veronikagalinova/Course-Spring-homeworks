@@ -1,13 +1,13 @@
 package bg.sofia.uni.fmi.Blogger.Rest.API.domain;
 
 import bg.sofia.uni.fmi.Blogger.Rest.API.dao.UsersRepository;
-import bg.sofia.uni.fmi.Blogger.Rest.API.exception.InvalidEntityException;
 import bg.sofia.uni.fmi.Blogger.Rest.API.exception.NonexisitngEntityException;
 import bg.sofia.uni.fmi.Blogger.Rest.API.model.Role;
 import bg.sofia.uni.fmi.Blogger.Rest.API.model.User;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
@@ -30,8 +30,11 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public User createUser(@Valid User user) {
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
-            user.setRoles(Arrays.asList(Role.BLOGGER));
+            user.setRoles(Arrays.asList(Role.ROLE_BLOGGER));
         }
+
+        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setActive(true);
         User created = repository.save(user);
         log.debug(">>>Created new user: " + created);
@@ -71,5 +74,10 @@ public class UsersServiceImpl implements UsersService {
                 new NonexisitngEntityException(String.format("User with ID=%s not found.", id)));
         repository.deleteById(id);
         return user;
+    }
+
+    @Override
+    public long getSize() {
+        return repository.count();
     }
 }

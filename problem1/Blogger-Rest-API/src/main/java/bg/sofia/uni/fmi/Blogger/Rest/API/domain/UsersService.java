@@ -12,4 +12,5 @@ public interface UsersService {
     User getUserById(String id);
     User getUserByEmail(String email);
     User deleteUser(String id);
+    long getSize();
 }

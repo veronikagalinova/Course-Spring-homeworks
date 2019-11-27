@@ -59,4 +59,9 @@ public class PostsServiceImpl implements PostsService {
         repository.deleteById(postId);
         return old.get();
     }
+
+    @Override
+    public long getSize() {
+        return repository.count();
+    }
 }
