@@ -10,7 +10,7 @@ public interface UsersService {
     User createUser(@Valid User user);
     User updateUser(User user);
     User getUserById(String id);
-    User getUserByEmail(String email);
+    User findByUsername(String username);
     User deleteUser(String id);
     long getSize();
 }

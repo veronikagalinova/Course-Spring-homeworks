@@ -54,18 +54,9 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public User getUserByEmail(String email) {
-        if (email == null || "".equals(email.trim())) {
-            return null;
-        }
-
-        Optional<User> foundUser = repository.findByEmail(email);
-        if (!foundUser.isPresent()) {
-            return null;
-        }
-
-        log.debug(">>>>Found user by email: ", foundUser.get());
-        return foundUser.get();
+    public User findByUsername(String username) {
+       return repository.findByUsername(username).orElseThrow(() -> new NonexisitngEntityException(
+                String.format("User with email='%s' does not exist.", username)));
     }
 
     @Override
