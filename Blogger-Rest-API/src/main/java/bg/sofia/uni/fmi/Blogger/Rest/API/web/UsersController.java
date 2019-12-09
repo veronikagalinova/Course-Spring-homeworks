@@ -2,8 +2,10 @@ package bg.sofia.uni.fmi.Blogger.Rest.API.web;
 
 import bg.sofia.uni.fmi.Blogger.Rest.API.domain.UsersService;
 import bg.sofia.uni.fmi.Blogger.Rest.API.exception.InvalidEntityException;
+import bg.sofia.uni.fmi.Blogger.Rest.API.exception.NonexisitngEntityException;
 import bg.sofia.uni.fmi.Blogger.Rest.API.model.Role;
 import bg.sofia.uni.fmi.Blogger.Rest.API.model.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -19,6 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+@Slf4j
 public class UsersController {
 
     @Autowired
@@ -26,6 +29,8 @@ public class UsersController {
 
     private static final String INVALID_ENTITY_ERROR_MSG = "User ID=%s from path is different from Entity ID=%s";
     private static final String FORBIDDEN_ERROR_MSG = "Only ADMINISTRATOR can change user roles!";
+    private static final String EXISTING_USER_ERROR_MSG = "User %s already exist!";
+
 
 
     @GetMapping
@@ -41,6 +46,16 @@ public class UsersController {
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
+        User userInDb = null;
+        try {
+            userInDb = service.findByUsername(user.getUsername());
+        } catch (NonexisitngEntityException ex) {
+            log.debug(ex.getMessage());
+        }
+        if (userInDb != null) {
+            throw new InvalidEntityException(
+                    String.format(EXISTING_USER_ERROR_MSG, user.getUsername()));
+        }
         User created = service.createUser(user);
         URI location = MvcUriComponentsBuilder.fromMethodName(UsersController.class, "createUser", User.class)
                 .pathSegment("{id}").buildAndExpand(created.getId()).toUri() ;
